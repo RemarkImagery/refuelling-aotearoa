@@ -68,6 +68,14 @@
             background: var(--orange); height: 40px; overflow: hidden;
             display: flex; align-items: center;
         }
+        .ticker-bottom {
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 199;
+            background: var(--orange); height: 40px; overflow: hidden;
+            display: flex; align-items: center;
+        }
+        .ticker-bottom .ticker-track {
+            animation-direction: reverse;
+        }
         .ticker-flag {
             flex-shrink: 0; background: var(--deep); color: var(--orange);
             font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 14px;
@@ -488,7 +496,7 @@
            FOOTER
            ═══════════════════════════════════════ */
         footer {
-            padding: 40px 20px; text-align: center;
+            padding: 40px 20px 80px; text-align: center;
             background: #030610;
             border-top: 1px solid rgba(232,119,46,0.08);
         }
@@ -757,6 +765,25 @@
     </section>
 
     </main>
+
+    <!-- BOTTOM TICKER -->
+    <div class="ticker ticker-bottom" aria-hidden="true">
+        <div class="ticker-flag">Breaking</div>
+        <div class="ticker-track">
+            <span>Huge snake oil deposits discovered off NZ coast</span>
+            <span>CEO announces rebrand to Refuelling Aotearoa</span>
+            <span>Horses to replace EVs on national roads</span>
+            <span>Whale oil lamps making historic comeback</span>
+            <span>$200M anonymous donation: "please shut up about electric stuff"</span>
+            <span>AGM 11:59am April 1</span>
+            <span>Huge snake oil deposits discovered off NZ coast</span>
+            <span>CEO announces rebrand to Refuelling Aotearoa</span>
+            <span>Horses to replace EVs on national roads</span>
+            <span>Whale oil lamps making historic comeback</span>
+            <span>$200M anonymous donation: "please shut up about electric stuff"</span>
+            <span>AGM 11:59am April 1</span>
+        </div>
+    </div>
 
     <!-- FOOTER -->
     <footer>
