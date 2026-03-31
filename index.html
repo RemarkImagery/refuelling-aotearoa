@@ -445,7 +445,7 @@
         /* ═══════════════════════════════════════
            AGM BANNER
            ═══════════════════════════════════════ */
-        .agm { background: var(--orange); text-align: center; padding: 36px 20px; }
+        .agm { background: var(--orange); text-align: center; padding: 36px 20px; position: relative; z-index: 30; }
         .agm h3 {
             font-family: 'Oswald', sans-serif; font-weight: 700;
             font-size: 1.3rem; text-transform: uppercase;
@@ -463,11 +463,12 @@
         }
         .paper-rip {
             position: absolute;
-            top: -40px;
+            bottom: 0;
             left: 0; right: 0;
-            z-index: 30;
+            z-index: 31;
             line-height: 0;
             pointer-events: none;
+            transform: translateY(50%);
         }
         .paper-rip img {
             width: 100%;
@@ -786,13 +787,13 @@
     <div class="agm">
         <h3>Annual General Meeting &mdash; 11:59 AM, April 1</h3>
         <p>Refreshments include snake oil smoothies and grass-fed horse d'oeuvres</p>
+        <div class="paper-rip" aria-hidden="true">
+            <img src="images/rip-orange.png" alt="">
+        </div>
     </div>
 
-    <!-- ═══ REVEAL — PAPER RIP + REAL SITE ═══ -->
+    <!-- ═══ REVEAL — REAL SITE ═══ -->
     <div class="reveal-wrap" id="truth">
-        <div class="paper-rip" aria-hidden="true">
-            <img src="images/paper-rip.png" alt="">
-        </div>
         <section class="reveal-hero">
             <div class="reveal-hero-bg" aria-hidden="true">
                 <img src="images/nzmade-hero.png" alt="New Zealand-Made Energy — Rewiring Aotearoa">
