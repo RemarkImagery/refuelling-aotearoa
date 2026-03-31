@@ -456,42 +456,81 @@
         }
 
         /* ═══════════════════════════════════════
-           REVEAL CTA
+           REVEAL — PAPER RIP + REAL SITE
            ═══════════════════════════════════════ */
-        .reveal-cta {
-            background: var(--deep); text-align: center;
+        .reveal-wrap {
             position: relative;
         }
-        .reveal-cta::before {
-            content: ''; position: absolute; top: 0; left: 50%;
-            transform: translateX(-50%); width: 1px; height: 80px;
-            background: linear-gradient(var(--orange), transparent);
+        .paper-rip {
+            position: absolute;
+            top: -40px;
+            left: 0; right: 0;
+            z-index: 30;
+            line-height: 0;
+            pointer-events: none;
         }
-        .snake-circle {
-            width: 160px; height: 160px; border-radius: 50%; overflow: hidden;
-            margin: 0 auto 32px; border: 2px solid var(--orange);
-            box-shadow: 0 0 50px rgba(232,119,46,0.2);
+        .paper-rip img {
+            width: 100%;
+            display: block;
         }
-        .snake-circle img { width: 100%; height: 100%; object-fit: cover; }
-        .reveal-cta h2 {
+        .reveal-hero {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .reveal-hero-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+        .reveal-hero-bg img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .reveal-hero-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(transparent 50%, rgba(0,0,0,0.6) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+        .reveal-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 60px 28px;
+            max-width: 640px;
+            margin-top: auto;
+            margin-bottom: 60px;
+        }
+        .reveal-content h2 {
             font-family: 'Oswald', sans-serif; font-weight: 700;
             font-size: clamp(1.6rem, 3.5vw, 2.4rem);
             text-transform: uppercase; letter-spacing: 3px; margin-bottom: 16px;
+            color: #fff;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.5);
         }
-        .reveal-cta p {
-            max-width: 580px; margin: 0 auto 32px;
-            font-size: 1.1rem; line-height: 1.8; color: var(--text);
+        .reveal-content p {
+            margin: 0 auto 32px;
+            font-size: 1.1rem; line-height: 1.8; color: rgba(255,255,255,0.9);
+            text-shadow: 0 1px 10px rgba(0,0,0,0.4);
         }
         .cta-btn {
             display: inline-block; cursor: pointer;
             font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 600;
             text-transform: uppercase; letter-spacing: 4px;
             padding: 16px 48px; text-decoration: none;
-            color: var(--deep); background: var(--orange);
-            border: 2px solid var(--orange);
-            transition: background 0.3s, color 0.3s;
+            color: #fff; background: #1a8a5c;
+            border: 2px solid #1a8a5c;
+            border-radius: 4px;
+            transition: background 0.3s, color 0.3s, transform 0.3s;
         }
-        .cta-btn:hover { background: transparent; color: var(--orange); }
+        .cta-btn:hover { background: #146b48; border-color: #146b48; transform: translateY(-2px); }
 
         /* ═══════════════════════════════════════
            FOOTER
@@ -755,15 +794,23 @@
         <div style="position:absolute;inset:0;background:linear-gradient(transparent 40%, var(--deep) 100%);pointer-events:none;"></div>
     </div>
 
-    <!-- ═══ REVEAL CTA ═══ -->
-    <section class="reveal-cta section-pad" id="truth">
-        <div class="snake-circle sr" aria-hidden="true">
-            <img src="images/snake-face.jpeg" alt="">
+    <!-- ═══ REVEAL — PAPER RIP + REAL SITE ═══ -->
+    <div class="reveal-wrap" id="truth">
+        <div class="paper-rip" aria-hidden="true">
+            <img src="images/paper-rip.png" alt="">
         </div>
-        <h2 class="sr">Wait. This isn't real.</h2>
-        <p class="sr">If you think this is real, we need to talk. If you know this is an April Fools' joke &mdash; nice one. Now read about our <em>actual</em> New Zealand-made energy strategy. Significantly fewer snakes. Absolutely zero whale oil.</p>
-        <a href="https://www.rewiringaotearoa.nz/nz-made-energy" class="cta-btn sr">Read the real strategy &rarr;</a>
-    </section>
+        <section class="reveal-hero">
+            <div class="reveal-hero-bg" aria-hidden="true">
+                <img src="images/nzmade-hero.png" alt="New Zealand-Made Energy — Rewiring Aotearoa">
+            </div>
+            <div class="reveal-hero-overlay" aria-hidden="true"></div>
+            <div class="reveal-content">
+                <h2 class="sr">Wait. This isn't real.</h2>
+                <p class="sr">If you think this is real, we need to talk. If you know this is an April Fools' joke &mdash; nice one. Now read about our <em>actual</em> New Zealand-made energy strategy. Significantly fewer snakes. Absolutely zero whale oil.</p>
+                <a href="https://www.rewiringaotearoa.nz/nz-made-energy" class="cta-btn sr">Read the real strategy &rarr;</a>
+            </div>
+        </section>
+    </div>
 
     </main>
 
