@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refuelling Aotearoa | A Bold New Direction</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --deep: #060a12;
+            --navy: #0b1528;
+            --slate: #12223e;
+            --blue: #1a3058;
+            --orange: #e8772e;
+            --orange-hot: #f59440;
+            --cream: #f0e8d8;
+            --text: rgba(240,232,216,0.9);
+            --text-mid: rgba(240,232,216,0.65);
+            --text-dim: rgba(240,232,216,0.4);
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Source Serif 4', Georgia, serif;
+            background: var(--deep);
+            color: var(--cream);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ═══════════════════════════════════════
+           TOPBAR
+           ═══════════════════════════════════════ */
+        .topbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 40px; height: 64px;
+            background: rgba(6,10,18,0.85);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(232,119,46,0);
+            transition: border-color 0.4s, background 0.4s;
+        }
+        .topbar.scrolled {
+            border-bottom-color: rgba(232,119,46,0.3);
+            background: rgba(6,10,18,0.95);
+        }
+        .topbar-left { display: flex; align-items: center; gap: 16px; }
+        .topbar-logo { height: 34px; filter: brightness(0) invert(1); opacity: 0.9; }
+        .topbar-divider { width: 1px; height: 20px; background: rgba(240,232,216,0.15); }
+        .topbar-label {
+            font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 4px; color: var(--orange);
+        }
+        .topbar-nav { display: flex; gap: 8px; }
+        .topbar-nav a {
+            font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 400;
+            text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim);
+            text-decoration: none; padding: 8px 14px; transition: color 0.2s; cursor: pointer;
+        }
+        .topbar-nav a:hover { color: var(--orange); }
+
+        /* ═══════════════════════════════════════
+           TICKER
+           ═══════════════════════════════════════ */
+        .ticker {
+            position: fixed; top: 64px; left: 0; right: 0; z-index: 199;
+            background: var(--orange); height: 40px; overflow: hidden;
+            display: flex; align-items: center;
+        }
+        .ticker-flag {
+            flex-shrink: 0; background: var(--deep); color: var(--orange);
+            font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 14px;
+            letter-spacing: 3px; text-transform: uppercase;
+            padding: 0 24px; height: 100%; display: flex; align-items: center;
+            z-index: 1; position: relative;
+        }
+        .ticker-flag::after {
+            content: ''; position: absolute; right: -14px; top: 0; bottom: 0;
+            border-left: 14px solid var(--deep); border-top: 20px solid transparent;
+            border-bottom: 20px solid transparent;
+        }
+        .ticker-track {
+            display: flex; animation: scroll-ticker 40s linear infinite;
+            font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 15px;
+            letter-spacing: 1px; text-transform: uppercase; color: var(--deep);
+            padding-left: 24px;
+        }
+        .ticker-track span { flex-shrink: 0; padding: 0 40px; white-space: nowrap; }
+        .ticker-track span::before { content: '/// '; opacity: 0.4; }
+        @keyframes scroll-ticker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* ═══════════════════════════════════════
+           HERO — COMPOSITE PARALLAX
+           ═══════════════════════════════════════ */
+        .hero-wrap {
+            position: relative;
+            height: 200vh;
+        }
+        .hero-stage {
+            position: sticky; top: 104px; /* topbar 64 + ticker 40 */
+            width: 100%; height: calc(100vh - 104px);
+            overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            background: var(--deep);
+        }
+
+        /* Crowd background — starts slightly zoomed so scale-down never reveals edges */
+        .hero-crowd {
+            position: absolute; inset: -5%;
+            width: 110%; height: 110%;
+            background: url('images/crowd.png') center center / cover no-repeat;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Vignette overlay on crowd */
+        .hero-crowd-vignette {
+            position: absolute; inset: 0;
+            background:
+                radial-gradient(ellipse 70% 50% at 50% 50%, transparent 20%, rgba(6,10,18,0.7) 100%),
+                linear-gradient(180deg, rgba(6,10,18,0.4) 0%, transparent 30%, transparent 70%, rgba(6,10,18,0.8) 100%);
+            pointer-events: none;
+        }
+
+        /* Banner from top — starts in position, parallaxes up on scroll */
+        .hero-banner {
+            position: absolute;
+            top: 0; left: 50%;
+            transform: translateX(-50%) translateY(18%);
+            width: clamp(320px, 65vh, 90vw);
+            z-index: 3;
+            filter: drop-shadow(0 20px 60px rgba(0,0,0,0.7));
+            pointer-events: none;
+        }
+        .hero-banner img { width: 100%; display: block; }
+        /* Zoom origin: center of the banner */
+        .hero-banner { transform-origin: center center; }
+
+        /* Mike from bottom — starts in position, parallaxes down on scroll */
+        .hero-mike {
+            position: absolute;
+            bottom: 0; left: 50%;
+            transform: translateX(-50%) translateY(0%);
+            /* Height-based so Mike is always a dominant presence */
+            height: 75vh;
+            width: auto;
+            z-index: 4;
+            pointer-events: none;
+        }
+        .hero-mike img {
+            height: 100%; width: auto; display: block;
+            mix-blend-mode: screen;
+            object-position: bottom;
+        }
+        .hero-mike { transform-origin: center bottom; }
+
+        /* Smoke/light overlays — vh-sized */
+        .hero-glow-left, .hero-glow-right {
+            position: absolute; top: 20%; width: 30vw; height: 50vh;
+            background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+            z-index: 2; pointer-events: none; opacity: 0.5;
+        }
+        .hero-glow-left { left: 8%; }
+        .hero-glow-right { right: 8%; }
+
+        /* Old Man Gas character */
+        .hero-oldmangas {
+            position: absolute;
+            bottom: 0; left: 0;
+            width: clamp(200px, 40vh, 500px);
+            z-index: 15;
+            pointer-events: none;
+        }
+        .hero-oldmangas img {
+            width: 100%; display: block;
+            animation: wiggle 3s ease-in-out infinite;
+        }
+        .hero-oldmangas { transform-origin: left bottom; }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg) translateY(0); }
+            25% { transform: rotate(2deg) translateY(-3px); }
+            50% { transform: rotate(-1.5deg) translateY(1px); }
+            75% { transform: rotate(1deg) translateY(-2px); }
+        }
+
+        /* Text overlay */
+        .hero-text {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            z-index: 10; text-align: center;
+            padding: 0 20px 5vh;
+            background: linear-gradient(transparent, rgba(6,10,18,0.95) 70%);
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.4s;
+        }
+        .hero-text.hidden { opacity: 0; }
+
+        .hero-text h1 {
+            font-family: 'Oswald', sans-serif; font-weight: 700;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            text-transform: uppercase; letter-spacing: 3px; line-height: 1;
+            margin-bottom: 16px;
+        }
+        .hero-text h1 .accent { color: var(--orange); }
+        .hero-text .tagline {
+            font-family: 'Oswald', sans-serif; font-weight: 300;
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            text-transform: uppercase; letter-spacing: 6px; color: var(--text-mid);
+        }
+
+        /* ═══════════════════════════════════════
+           SECTION COMMON
+           ═══════════════════════════════════════ */
+        .section-pad { padding: 100px 28px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .narrow { max-width: 720px; }
+
+        .section-label {
+            font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 6px; color: var(--orange);
+            margin-bottom: 16px;
+        }
+        .section-heading {
+            font-family: 'Oswald', sans-serif; font-weight: 700;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            text-transform: uppercase; letter-spacing: 2px; line-height: 1.05;
+            margin-bottom: 32px;
+        }
+
+        p.body-text {
+            font-size: 1.15rem; line-height: 1.9; color: var(--text);
+            margin-bottom: 28px;
+        }
+        .hl { color: var(--orange); font-weight: 600; }
+
+        /* ═══════════════════════════════════════
+           INTRO SECTION
+           ═══════════════════════════════════════ */
+        .intro {
+            background: var(--deep);
+            border-top: 3px solid var(--orange);
+            position: relative;
+            z-index: 20;
+            margin-top: -25vh;
+        }
+        .intro-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 60px; align-items: start;
+        }
+        .intro-lead {
+            font-family: 'Oswald', sans-serif; font-weight: 300;
+            font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+            line-height: 1.5; color: var(--cream);
+            border-left: 3px solid var(--orange);
+            padding-left: 24px;
+        }
+
+        /* ═══════════════════════════════════════
+           PULLQUOTE
+           ═══════════════════════════════════════ */
+        .pullquote {
+            background: var(--navy);
+            position: relative; overflow: hidden;
+        }
+        .pullquote::before {
+            content: '';
+            position: absolute; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='34'%3E%3Cellipse cx='25' cy='17' rx='23' ry='15' fill='none' stroke='rgba(232,119,46,0.05)' stroke-width='1'/%3E%3Cellipse cx='0' cy='0' rx='23' ry='15' fill='none' stroke='rgba(232,119,46,0.05)' stroke-width='1'/%3E%3Cellipse cx='50' cy='0' rx='23' ry='15' fill='none' stroke='rgba(232,119,46,0.05)' stroke-width='1'/%3E%3Cellipse cx='0' cy='34' rx='23' ry='15' fill='none' stroke='rgba(232,119,46,0.05)' stroke-width='1'/%3E%3Cellipse cx='50' cy='34' rx='23' ry='15' fill='none' stroke='rgba(232,119,46,0.05)' stroke-width='1'/%3E%3C/svg%3E");
+            background-size: 50px 34px;
+        }
+        .pullquote-inner {
+            position: relative; max-width: 760px; margin: 0 auto; text-align: center;
+        }
+        .pullquote-mark {
+            font-family: 'Oswald', sans-serif; font-size: 100px;
+            color: var(--orange); opacity: 0.15; line-height: 0.6; display: block;
+        }
+        .pullquote-text {
+            font-size: clamp(1.3rem, 3vw, 1.8rem);
+            font-style: italic; line-height: 1.6; margin: 16px 0 24px;
+        }
+        .pullquote-cite {
+            font-family: 'Oswald', sans-serif; font-size: 12px; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 4px; color: var(--orange);
+        }
+
+        /* ═══════════════════════════════════════
+           STATS STRIP
+           ═══════════════════════════════════════ */
+        .stats-strip {
+            background: var(--orange);
+            padding: 48px 28px;
+        }
+        .stats-grid {
+            max-width: 900px; margin: 0 auto;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+            text-align: center;
+        }
+        .stat-num {
+            font-family: 'Oswald', sans-serif; font-weight: 700;
+            font-size: clamp(2.5rem, 5vw, 3.5rem); color: var(--deep); line-height: 1;
+        }
+        .stat-desc {
+            font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 2px; color: rgba(6,10,18,0.6);
+            margin-top: 4px;
+        }
+
+        /* ═══════════════════════════════════════
+           POLICY CARD
+           ═══════════════════════════════════════ */
+        .policy-section { background: var(--deep); }
+        .policy-card {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+            margin-bottom: 2px; overflow: hidden;
+        }
+        .policy-card:nth-child(even) .policy-img { order: -1; }
+        .policy-img {
+            aspect-ratio: 16 / 9;
+            background-size: cover; background-position: center;
+            position: relative;
+        }
+        .policy-img::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(90deg, transparent 60%, var(--navy) 100%);
+        }
+        .policy-card:nth-child(even) .policy-img::after {
+            background: linear-gradient(270deg, transparent 60%, var(--navy) 100%);
+        }
+        .policy-content {
+            background: var(--navy);
+            padding: 60px 48px;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+        .policy-num {
+            font-family: 'Oswald', sans-serif; font-size: 60px; font-weight: 700;
+            color: var(--orange); opacity: 0.15; line-height: 1; margin-bottom: 8px;
+        }
+        .policy-title {
+            font-family: 'Oswald', sans-serif; font-size: 1.6rem; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px;
+        }
+        .policy-text {
+            font-size: 1.05rem; line-height: 1.8; color: var(--text);
+        }
+
+        /* ═══════════════════════════════════════
+           MAP SECTION
+           ═══════════════════════════════════════ */
+        .map-section {
+            background: #050910;
+            text-align: center;
+        }
+        .map-stamp {
+            display: inline-block;
+            font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 5px;
+            color: var(--orange); border: 2px solid var(--orange);
+            padding: 6px 28px; margin-bottom: 24px;
+            transform: rotate(-1.5deg);
+        }
+        .map-img {
+            max-width: 620px; width: 90%; margin: 0 auto;
+            filter: drop-shadow(0 20px 80px rgba(232,119,46,0.08));
+        }
+
+        /* ═══════════════════════════════════════
+           BOTTLE FEATURE
+           ═══════════════════════════════════════ */
+        .bottle-section {
+            background: linear-gradient(180deg, var(--deep) 0%, #0a0f1a 50%, var(--deep) 100%);
+        }
+        .bottle-layout {
+            display: flex; align-items: center; gap: 64px;
+            max-width: 900px; margin: 0 auto;
+        }
+        .bottle-img-wrap {
+            flex-shrink: 0; width: 360px; position: relative;
+        }
+        .bottle-img-wrap img {
+            width: 100%; border-radius: 8px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(232,119,46,0.1);
+        }
+        .bottle-img-wrap::before {
+            content: ''; position: absolute; inset: -50px;
+            background: radial-gradient(circle, rgba(232,119,46,0.08) 0%, transparent 60%);
+            z-index: -1;
+        }
+        .bottle-info h2 {
+            font-family: 'Oswald', sans-serif; font-weight: 700;
+            font-size: 2.2rem; text-transform: uppercase; letter-spacing: 2px;
+            line-height: 1.1; margin-bottom: 20px;
+        }
+        .bottle-info p { font-size: 1.05rem; line-height: 1.85; color: var(--text); }
+
+        /* ═══════════════════════════════════════
+           CEO QUOTE BANNER
+           ═══════════════════════════════════════ */
+        .ceo-banner {
+            display: grid; grid-template-columns: 320px 1fr;
+            gap: 48px; align-items: end;
+            background: var(--slate);
+            padding: 60px;
+            max-width: 1000px; margin: 0 auto;
+            position: relative; overflow: hidden;
+        }
+        .ceo-banner::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--orange), transparent);
+        }
+        .ceo-banner img {
+            width: 100%;
+            border-radius: 4px;
+            filter: drop-shadow(0 10px 30px rgba(0,0,0,0.5));
+            display: block;
+            margin-bottom: -60px; /* bleed past bottom padding */
+        }
+        .ceo-banner > div {
+            align-self: center;
+        }
+        .ceo-banner blockquote {
+            font-size: 1.15rem; font-style: italic; line-height: 1.8; color: var(--text);
+        }
+        .ceo-banner cite {
+            display: block; margin-top: 20px;
+            font-family: 'Oswald', sans-serif; font-style: normal;
+            font-size: 12px; text-transform: uppercase;
+            letter-spacing: 4px; color: var(--orange);
+        }
+
+        /* ═══════════════════════════════════════
+           AGM BANNER
+           ═══════════════════════════════════════ */
+        .agm { background: var(--orange); text-align: center; padding: 36px 20px; }
+        .agm h3 {
+            font-family: 'Oswald', sans-serif; font-weight: 700;
+            font-size: 1.3rem; text-transform: uppercase;
+            letter-spacing: 5px; color: var(--deep);
+        }
+        .agm p {
+            font-size: 0.95rem; color: var(--deep); opacity: 0.65; margin-top: 4px;
+        }
+
+        /* ═══════════════════════════════════════
+           REVEAL CTA
+           ═══════════════════════════════════════ */
+        .reveal-cta {
+            background: var(--deep); text-align: center;
+            position: relative;
+        }
+        .reveal-cta::before {
+            content: ''; position: absolute; top: 0; left: 50%;
+            transform: translateX(-50%); width: 1px; height: 80px;
+            background: linear-gradient(var(--orange), transparent);
+        }
+        .snake-circle {
+            width: 160px; height: 160px; border-radius: 50%; overflow: hidden;
+            margin: 0 auto 32px; border: 2px solid var(--orange);
+            box-shadow: 0 0 50px rgba(232,119,46,0.2);
+        }
+        .snake-circle img { width: 100%; height: 100%; object-fit: cover; }
+        .reveal-cta h2 {
+            font-family: 'Oswald', sans-serif; font-weight: 700;
+            font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+            text-transform: uppercase; letter-spacing: 3px; margin-bottom: 16px;
+        }
+        .reveal-cta p {
+            max-width: 580px; margin: 0 auto 32px;
+            font-size: 1.1rem; line-height: 1.8; color: var(--text);
+        }
+        .cta-btn {
+            display: inline-block; cursor: pointer;
+            font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 4px;
+            padding: 16px 48px; text-decoration: none;
+            color: var(--deep); background: var(--orange);
+            border: 2px solid var(--orange);
+            transition: background 0.3s, color 0.3s;
+        }
+        .cta-btn:hover { background: transparent; color: var(--orange); }
+
+        /* ═══════════════════════════════════════
+           FOOTER
+           ═══════════════════════════════════════ */
+        footer {
+            padding: 40px 20px; text-align: center;
+            background: #030610;
+            border-top: 1px solid rgba(232,119,46,0.08);
+        }
+        footer img { height: 24px; filter: brightness(0) invert(1); opacity: 0.25; margin-bottom: 10px; }
+        footer p {
+            font-family: 'Oswald', sans-serif; font-size: 10px;
+            text-transform: uppercase; letter-spacing: 3px; color: var(--text-dim);
+        }
+
+        /* ═══════════════════════════════════════
+           SCROLL REVEAL
+           ═══════════════════════════════════════ */
+        .sr { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+        .sr.vis { opacity: 1; transform: translateY(0); }
+
+        /* ═══════════════════════════════════════
+           FOCUS / A11Y
+           ═══════════════════════════════════════ */
+        a:focus-visible, button:focus-visible {
+            outline: 2px solid var(--orange); outline-offset: 3px;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            html { scroll-behavior: auto; }
+            .sr { opacity: 1; transform: none; }
+            .hero-banner, .hero-mike { transition: none !important; }
+            .ticker-track { animation: none; }
+        }
+
+        /* ═══════════════════════════════════════
+           RESPONSIVE
+           ═══════════════════════════════════════ */
+        @media (max-width: 900px) {
+            .intro-grid { grid-template-columns: 1fr; gap: 32px; }
+            .policy-card { grid-template-columns: 1fr; }
+            .policy-card:nth-child(even) .policy-img { order: 0; }
+            .policy-img { min-height: 240px; }
+            .policy-img::after { background: linear-gradient(180deg, transparent 50%, var(--navy) 100%) !important; }
+            .bottle-layout { flex-direction: column; gap: 40px; }
+            .bottle-img-wrap { width: min(340px, 90%); }
+            .ceo-banner { grid-template-columns: 1fr; padding: 36px; text-align: center; }
+            .ceo-banner img { max-width: 240px; margin: 0 auto; order: -1; }
+            .ceo-banner > div { order: -2; }
+        }
+        @media (max-width: 600px) {
+            .topbar { padding: 0 12px; height: 52px; }
+            .topbar-logo { height: 28px; }
+            .topbar-label { font-size: 10px; letter-spacing: 2px; }
+            .topbar-nav { display: none; }
+            .topbar-divider { display: none; }
+            .ticker { top: 52px; height: 34px; }
+            .ticker-flag { font-size: 11px; padding: 0 14px; }
+            .ticker-flag::after {
+                border-left-width: 10px;
+                border-top-width: 17px;
+                border-bottom-width: 17px;
+                right: -10px;
+            }
+            .ticker-track { font-size: 12px; }
+            .hero-stage { top: 86px; height: calc(100vh - 86px); }
+            .hero-banner { width: 95vw; }
+            .hero-mike { height: 55vh; }
+            .hero-oldmangas { width: 160px; }
+            .hero-text h1 { font-size: 2.2rem; }
+            .hero-text .tagline { font-size: 0.85rem; letter-spacing: 3px; }
+            .stats-grid { grid-template-columns: 1fr; gap: 24px; }
+            .policy-content { padding: 36px 24px; }
+            .section-pad { padding: 64px 20px; }
+            .ceo-banner img { margin-bottom: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOPBAR -->
+    <nav class="topbar" role="navigation" aria-label="Main navigation">
+        <div class="topbar-left">
+            <img src="images/logo.svg" alt="Refuelling Aotearoa" class="topbar-logo">
+            <div class="topbar-divider" aria-hidden="true"></div>
+            <span class="topbar-label">1 April 2026</span>
+        </div>
+        <div class="topbar-nav">
+            <a href="#vision">Vision</a>
+            <a href="#policy">Policy</a>
+            <a href="#deposits">Deposits</a>
+            <a href="#truth">The Truth</a>
+        </div>
+    </nav>
+
+    <!-- TICKER -->
+    <div class="ticker" aria-hidden="true">
+        <div class="ticker-flag">Breaking</div>
+        <div class="ticker-track">
+            <span>Snake oil deposits discovered off NZ coast</span>
+            <span>CEO announces rebrand to Refuelling Aotearoa</span>
+            <span>Horses to replace EVs on national roads</span>
+            <span>Whale oil lamps making historic comeback</span>
+            <span>$200M anonymous donation: "please shut up about electric stuff"</span>
+            <span>AGM 11:59am April 1</span>
+            <span>Snake oil deposits discovered off NZ coast</span>
+            <span>CEO announces rebrand to Refuelling Aotearoa</span>
+            <span>Horses to replace EVs on national roads</span>
+            <span>Whale oil lamps making historic comeback</span>
+            <span>$200M anonymous donation: "please shut up about electric stuff"</span>
+            <span>AGM 11:59am April 1</span>
+        </div>
+    </div>
+
+    <main>
+
+    <!-- ═══ HERO — COMPOSITE PARALLAX ═══ -->
+    <div class="hero-wrap" id="hero">
+        <div class="hero-stage">
+            <div class="hero-crowd" aria-hidden="true"></div>
+            <div class="hero-crowd-vignette" aria-hidden="true"></div>
+            <div class="hero-glow-left" aria-hidden="true"></div>
+            <div class="hero-glow-right" aria-hidden="true"></div>
+            <div class="hero-banner" aria-hidden="true"><img src="images/banner-logo.png" alt=""></div>
+            <div class="hero-mike" aria-hidden="true"><img src="images/mike-casey.png" alt=""></div>
+            <div class="hero-oldmangas" aria-hidden="true"><img src="images/old-man-gas.png" alt=""></div>
+            <div class="hero-text">
+                <h1>A Bold New<br><span class="accent">Direction</span></h1>
+                <p class="tagline">Snake Oil. Whale Oil. Horse Power. The Future Is Burning.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ INTRO ═══ -->
+    <section class="intro section-pad" id="vision">
+        <div class="container">
+            <div class="intro-grid">
+                <div>
+                    <p class="section-label sr">Press Release</p>
+                    <h2 class="section-heading sr">Introducing<br>Refuelling Aotearoa</h2>
+                </div>
+                <div>
+                    <p class="intro-lead sr">After 'crunching the numbers' and adding in new sources of 'New Zealand-made energy' to our equations, CEO Mike Casey says he has been forced to change the name of Rewiring Aotearoa to Refuelling Aotearoa.</p>
+                    <p class="body-text sr">There has been a huge amount of independently verified research showing electrification beats fossil fuels on economics, efficiency, emissions and energy security and that there is a huge opportunity for New Zealand to electrify, but the discovery of an almost infinite supply of snake oil off the coast of New Zealand has changed everything, he says.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ PULLQUOTE 1 ═══ -->
+    <section class="pullquote section-pad">
+        <div class="pullquote-inner sr">
+            <span class="pullquote-mark" aria-hidden="true">"</span>
+            <p class="pullquote-text">We may not have snakes in New Zealand now, but we have managed to make what is the largest snake oil discovery in the nation's history. It turns out what we've been needing this whole time is not cheap renewables, but cheap snake oil.</p>
+            <p class="pullquote-cite">Mike Casey, CEO</p>
+        </div>
+    </section>
+
+    <!-- ═══ STATS ═══ -->
+    <div class="stats-strip">
+        <div class="stats-grid">
+            <div class="sr"><div class="stat-num">&infin;</div><div class="stat-desc">Snake Oil Reserves (est.)</div></div>
+            <div class="sr"><div class="stat-num">4.5M</div><div class="stat-desc">Vehicles to Convert to Horse</div></div>
+            <div class="sr"><div class="stat-num">$200M</div><div class="stat-desc">Anonymous Donation</div></div>
+        </div>
+    </div>
+
+    <!-- ═══ POLICY CARDS ═══ -->
+    <section class="policy-section" id="policy">
+
+        <div class="policy-card sr">
+            <div class="policy-img" style="background-image: url('images/snake-face.jpeg');"></div>
+            <div class="policy-content">
+                <div class="policy-num" aria-hidden="true">01</div>
+                <h3 class="policy-title">Energy Sovereignty</h3>
+                <p class="policy-text">"We are all about energy sovereignty here at Refuelling Aotearoa. Just one third of all LPG is now imported and all of our petrol and diesel comes in on ships &mdash; hopefully &mdash; from other sovereign nations. That's classic energy sovereignty right there."</p>
+            </div>
+        </div>
+
+        <div class="policy-card sr">
+            <div class="policy-img" style="background-image: url('images/snake-oil-bottle.jpeg');"></div>
+            <div class="policy-content">
+                <div class="policy-num" aria-hidden="true">02</div>
+                <h3 class="policy-title">The Horse & Carriage Initiative</h3>
+                <p class="policy-text">Casey points out that grass is also New Zealand-made energy, so the organisation will be shifting its focus away from electrifying as many of the country's 4.5 million petrol and diesel light vehicles as possible and ensuring the horse and carriage is brought back to dominance on our roads.</p>
+            </div>
+        </div>
+
+        <div class="policy-card sr">
+            <div class="policy-img" style="background-image: url('images/whale-hunting.jpeg');"></div>
+            <div class="policy-content">
+                <div class="policy-num" aria-hidden="true">03</div>
+                <h3 class="policy-title">Whale Oil Renaissance</h3>
+                <p class="policy-text">"We will also be trying to bring back whale oil for all our lamps. There will be a few deaths and many health problems from the toxic cetacean and serpent fumes in homes, but obviously we'll make sure we tell people to crack a window."</p>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- ═══ CEO BANNER ═══ -->
+    <section class="section-pad" style="background: var(--deep);">
+        <div class="ceo-banner sr">
+            <img src="images/mike-casey-cutout.png" alt="CEO Mike Casey">
+            <div>
+                <blockquote>
+                    Casey says that for too long he has relied on his own personal experience as a cherry orchardist who relies on 21 electric machines, creates around 90% of the energy required to run them on his farm, and saves around $50,000 every year by avoiding diesel. He says he has also been led astray by the almost universally positive stories from thousands of New Zealanders. "They're obviously being paid by anti-snake people."
+                </blockquote>
+                <cite>Mike Casey, CEO — Refuelling Aotearoa</cite>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ PULLQUOTE 2 ═══ -->
+    <section class="pullquote section-pad">
+        <div class="pullquote-inner sr">
+            <span class="pullquote-mark" aria-hidden="true">"</span>
+            <p class="pullquote-text">But it's fine because I heard on YouTube that it actually helps plants grow. Isn't nature amazing! I find the people going on about climate change exhausting. Just because 99.9% of the peer reviewed research supports the need for us to get off fuels doesn't mean a V8 isn't cool.</p>
+            <p class="pullquote-cite">Mike Casey, CEO</p>
+        </div>
+    </section>
+
+    <!-- ═══ MAP ═══ -->
+    <section class="map-section section-pad" id="deposits">
+        <div class="container sr">
+            <div class="map-stamp">Classified</div>
+            <h2 class="section-heading">Hypothetical Snake Oil<br>Deposits</h2>
+            <p class="section-label" style="margin-bottom: 40px;">Technical Survey &mdash; Totally Real Data</p>
+            <img src="images/nz-snake-map.png" alt="NZ Snake Oil Deposit Map" class="map-img">
+        </div>
+    </section>
+
+    <!-- ═══ MORE CONTENT ═══ -->
+    <section class="section-pad" style="background: var(--deep);">
+        <div class="container narrow">
+            <p class="body-text sr">Casey says he has always loved the "sweet, sweet smell of expensive petrol in the morning" and regularly daubs it on his Swanndri before important meetings. He also uses a <span class="hl">diesel-based face scrub every day</span> to keep his skin glistening.</p>
+            <p class="body-text sr">"This was my secret shame when I was CEO of Rewiring Aotearoa. But now I can embrace it as the CEO of Refuelling Aotearoa. <span class="hl">It smells like the future.</span>"</p>
+            <p class="body-text sr">On reflection, Casey says Rewiring Aotearoa's definition of New Zealand-made energy was foolish and its goals were impossible to achieve.</p>
+            <p class="body-text sr">"I have never heard of new technologies coming along and overtaking older technologies. It just doesn't happen. New Zealand needs to double down on the kind of New Zealand-made energy you can import, burn or feed to horses. The direction of travel is clear: <span class="hl">things are about to go up in flames</span> and there's going to be about as much 'abundant oil and gas' as a night on the loaded nachos at the local Tex Mex restaurant."</p>
+            <p class="body-text sr">Casey says the decision to reverse course has <em>nothing</em> to do with the two-week, all-expenses paid trip to the Cayman Islands he was taken on by his "trusted friend" Old Man Gas, the anonymous <span class="hl">$200 million donation</span> that came with a request to 'please shut up about all this electric stuff', or the promise of 'north of a billion' for a new snake oil import terminal.</p>
+        </div>
+    </section>
+
+
+    <!-- ═══ AGM ═══ -->
+    <div class="agm">
+        <h3>Annual General Meeting &mdash; 11:59 AM, April 1</h3>
+        <p>Refreshments include snake oil smoothies and grass-fed horse d'oeuvres</p>
+    </div>
+
+    <!-- ═══ CROWD BAND ═══ -->
+    <div style="width:100%; max-height: 400px; overflow: hidden; position: relative;">
+        <img src="images/crowd.png" alt="Refuelling Aotearoa supporters" style="width:100%; display:block; object-fit:cover; max-height:400px;">
+        <div style="position:absolute;inset:0;background:linear-gradient(transparent 40%, var(--deep) 100%);pointer-events:none;"></div>
+    </div>
+
+    <!-- ═══ REVEAL CTA ═══ -->
+    <section class="reveal-cta section-pad" id="truth">
+        <div class="snake-circle sr" aria-hidden="true">
+            <img src="images/snake-face.jpeg" alt="">
+        </div>
+        <h2 class="sr">Wait. This isn't real.</h2>
+        <p class="sr">If you think this is real, we need to talk. If you know this is an April Fools' joke &mdash; nice one. Now read about our <em>actual</em> New Zealand-made energy strategy. Significantly fewer snakes. Absolutely zero whale oil.</p>
+        <a href="https://www.rewiringaotearoa.nz/nz-made-energy" class="cta-btn sr">Read the real strategy &rarr;</a>
+    </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <img src="images/logo.svg" alt="Rewiring Aotearoa">
+        <p>&copy; 2026 Rewiring Aotearoa &mdash; Happy April Fools' Day &mdash; No snakes were harmed</p>
+    </footer>
+
+    <!-- ═══ SCRIPTS ═══ -->
+    <script>
+    (function() {
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // ── Topbar scroll state ──
+        const topbar = document.querySelector('.topbar');
+        function updateTopbar() {
+            topbar.classList.toggle('scrolled', window.scrollY > 80);
+        }
+
+        // ── Scroll reveal ──
+        if (prefersReduced) {
+            document.querySelectorAll('.sr').forEach(el => el.classList.add('vis'));
+        } else {
+            const obs = new IntersectionObserver((entries) => {
+                entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
+            }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+            document.querySelectorAll('.sr').forEach(el => obs.observe(el));
+        }
+
+        // ── Hero parallax composite ──
+        const heroWrap = document.querySelector('.hero-wrap');
+        const heroStage = document.querySelector('.hero-stage');
+        const crowd = document.querySelector('.hero-crowd');
+        const banner = document.querySelector('.hero-banner');
+        const mike = document.querySelector('.hero-mike');
+        const glowL = document.querySelector('.hero-glow-left');
+        const glowR = document.querySelector('.hero-glow-right');
+        const heroText = document.querySelector('.hero-text');
+        const oldManGas = document.querySelector('.hero-oldmangas');
+
+        function updateHero() {
+            const rect = heroWrap.getBoundingClientRect();
+            const wrapH = heroWrap.offsetHeight;
+            const stageH = heroStage.offsetHeight;
+            const scrollable = wrapH - stageH;
+            const rawP = Math.max(0, -rect.top) / scrollable;
+            const p = Math.min(1, rawP);
+
+            // Crowd zooms out — oversized element so edges never show
+            crowd.style.transform = `scale(${1 - p * 0.1})`;
+
+            // Mike zooms in + drifts up
+            mike.style.transform = `translateX(-50%) translateY(${-p * 15}%) scale(${1 + p * 0.25})`;
+
+            // Banner zooms in slower + drifts up
+            banner.style.transform = `translateX(-50%) translateY(${18 - p * 25}%) scale(${1 + p * 0.15})`;
+
+            // Old Man Gas shrinks with the crowd (background layer)
+            oldManGas.style.transform = `scale(${1 - p * 0.15})`;
+
+            // Glow
+            const glowOpacity = Math.max(0.15, 0.5 - p * 0.35);
+            glowL.style.opacity = glowOpacity;
+            glowR.style.opacity = glowOpacity;
+
+            // Text
+            heroText.classList.toggle('hidden', p > 0.5);
+        }
+
+        function onScroll() {
+            updateTopbar();
+            if (!prefersReduced) updateHero();
+        }
+
+        // No special reduced-motion init needed — CSS defaults are already assembled
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll(); // initial call
+    })();
+    </script>
+
+</body>
+</html>
