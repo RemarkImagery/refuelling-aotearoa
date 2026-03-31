@@ -259,7 +259,16 @@
         }
         .intro-grid {
             display: grid; grid-template-columns: 1fr 1fr;
-            gap: 60px; align-items: start;
+            gap: 48px; align-items: start;
+        }
+        .intro-video {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            border: 2px solid rgba(232,119,46,0.2);
+        }
+        .intro-video video {
+            width: 100%; display: block;
         }
         .intro-lead {
             font-family: 'Oswald', sans-serif; font-weight: 300;
@@ -672,13 +681,16 @@
     <section class="intro section-pad" id="vision">
         <div class="container">
             <div class="intro-grid">
+                <div class="intro-video sr">
+                    <video controls playsinline preload="metadata" poster="">
+                        <source src="images/mike-speech.mp4" type="video/mp4">
+                    </video>
+                </div>
                 <div>
                     <p class="section-label sr">Press Release</p>
                     <h2 class="section-heading sr">Introducing<br>Refuelling Aotearoa</h2>
-                </div>
-                <div>
                     <p class="intro-lead sr">After 'crunching the numbers' and adding in new sources of 'New Zealand-made energy' to our equations, CEO Mike Casey says he has been forced to change the name of Rewiring Aotearoa to Refuelling Aotearoa.</p>
-                    <p class="body-text sr">There has been a huge amount of independently verified research showing electrification beats fossil fuels on economics, efficiency, emissions and energy security and that there is a huge opportunity for New Zealand to electrify, but the discovery of an almost infinite supply of snake oil in New Zealand has changed everything, he says.</p>
+                    <p class="body-text sr" style="margin-top: 24px;">There has been a huge amount of independently verified research showing electrification beats fossil fuels on economics, efficiency, emissions and energy security and that there is a huge opportunity for New Zealand to electrify, but the discovery of an almost infinite supply of snake oil in New Zealand has changed everything, he says.</p>
                 </div>
             </div>
         </div>
